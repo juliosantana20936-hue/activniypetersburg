@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Активный Петербург</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #0066CC;
+            --success: #00C853;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6f0fa 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        header {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .nav-btn {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+        
+        .profile-header {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #0066CC, #00B0FF);
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .rating-circle {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: conic-gradient(#00C853 0deg 280deg, #ddd 280deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px auto;
+        }
+        
+        .rating-inner {
+            width: 85px;
+            height: 85px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .points {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .card {
+            background: white;
+            margin: 15px;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .task {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .task:last-child { border-bottom: none; }
+        
+        .task-photo {
+            width: 70px;
+            height: 70px;
+            background: #eee;
+            border-radius: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        
+        .success-btn {
+            background: var(--success);
+        }
+        
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 24px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div class="logo">🛡️ Активный Петербург</div>
+            <div style="font-size:14px; color:#666;">
+                <span id="user-name">Иван Петров</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Навигация -->
+    <div class="nav">
+        <div class="nav-btn active" onclick="switchTab(0)">🏠 Главная</div>
+        <div class="nav-btn" onclick="switchTab(1)">📋 Задания</div>
+        <div class="nav-btn" onclick="switchTab(2)">🏆 Рейтинг</div>
+        <div class="nav-btn" onclick="switchTab(3)">👤 Профиль</div>
+    </div>
+
+    <div class="container" id="tab-0">
+        <!-- Главная -->
+        <div class="profile-header">
+            <div class="avatar">ИП</div>
+            <h2>Иван Петров</h2>
+            <p style="color:#666; margin:5px 0;">Уровень 12 • Гражданин Петербурга</p>
+            
+            <div class="rating-circle">
+                <div class="rating-inner">
+                    <div style="font-size:32px; font-weight:700; color:#00C853;">87</div>
+                    <div style="font-size:13px; color:#666;">рейтинг</div>
+                </div>
+            </div>
+            
+            <div class="points">1240 <span style="font-size:16px; color:#666;">очков</span></div>
+        </div>
+
+        <div class="card">
+            <h3>🎯 Сегодняшнее задание</h3>
+            <div class="task">
+                <div class="task-photo">❄️</div>
+                <div>
+                    <strong>Сообщить о гололёде</strong>
+                    <p style="font-size:14px; color:#666; margin:4px 0;">Невский пр., у дома 45</p>
+                    <button onclick="completeTask(this)" class="success-btn">Сфотографировать и отправить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>✅ Последние достижения</h3>
+            <p style="color:#00C853; margin:8px 0;">+50 очков — Убрали гололёд на Литейном</p>
+            <p style="color:#00C853; margin:8px 0;">+30 очков — Помог пожилому человеку</p>
+        </div>
+    </div>
+
+    <!-- Задания -->
+    <div class="container" id="tab-1" style="display:none;">
+        <div class="card">
+            <h3 style="margin-bottom:15px;">📋 Доступные задания</h3>
+            
+            <div class="task">
+                <div class="task-photo">🗑️</div>
+                <div style="flex:1">
+                    <strong>Убрать мусор в парке</strong>
+                    <p style="font-size:14px;">Таврический сад • +80 очков</p>
+                    <button onclick="doTask(this)">Выполнить</button>
+                </div>
+            </div>
+            
+            <div class="task">
+                <div class="task-photo">🚲</div>
+                <div style="flex:1">
+                    <strong>Сообщить о брошенном велосипеде</strong>
+                    <p style="font-size:14px;">+40 очков</p>
+                    <button onclick="doTask(this)">Выполнить</button>
+                </div>
+            </div>
+            
+            <div class="task">
+                <div class="task-photo">🌳</div>
+                <div style="flex:1">
+                    <strong>Посадить цветы у дома</strong>
+                    <p style="font-size:14px;">+120 очков</p>
+                    <button onclick="doTask(this)">Выполнить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Рейтинг -->
+    <div class="container" id="tab-2" style="display:none;">
+        <div class="card">
+            <h3>🏆 Топ жителей района</h3>
+            <ol style="padding-left:20px; line-height:2.2;">
+                <li>1. Анна Смирнова — 98</li>
+                <li>2. <strong>Вы</strong> — 87</li>
+                <li>3. Дмитрий Ковалёв — 84</li>
+                <li>4. Екатерина Морозова — 79</li>
+            </ol>
+        </div>
+        
+        <div class="card">
+            <h3>🎁 Бонусы за высокий рейтинг</h3>
+            <p style="background:#e8f5e9; padding:12px; border-radius:12px; font-size:15px;">
+                Рейтинг ≥ 85 → скидка 20% на штрафы ГИБДД и ЖКХ<br>
+                Рейтинг ≥ 90 → бесплатный проезд в общественном транспорте 1 раз в месяц
+            </p>
+        </div>
+    </div>
+
+    <!-- Профиль -->
+    <div class="container" id="tab-3" style="display:none;">
+        <div class="card">
+            <h3>👤 Мой профиль</h3>
+            <p><strong>Очки:</strong> 1240</p>
+            <p><strong>Рейтинг:</strong> 87 / 100</p>
+            <p><strong>Выполнено заданий:</strong> 47</p>
+            <p><strong>Привязано к Госуслугам:</strong> ✅</p>
+            
+            <button onclick="showBonusModal()">Посмотреть доступные бонусы</button>
+            <button onclick="fakeViolation()" style="background:#f44336; margin-top:8px;">Симулировать нарушение (тест)</button>
+        </div>
+    </div>
+
+    <!-- Нижняя панель -->
+    <div class="bottom-bar">
+        <div onclick="alert('Привязано к Госуслугам ✓')" style="cursor:pointer;">🔑 Госуслуги</div>
+        <div onclick="alert('Карта активностей скоро будет доступна')" style="cursor:pointer;">🗺️ Карта</div>
+        <div onclick="alert('Уведомления: 3 новых задания')" style="cursor:pointer;">🛎️</div>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Поздравляем!</h3>
+            <p id="modal-text"></p>
+            <button onclick="closeModal()" style="margin-top:20px;">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        let points = 1240;
+        let rating = 87;
+
+        function switchTab(n) {
+            document.querySelectorAll('.container').forEach(el => el.style.display = 'none');
+            document.getElementById('tab-' + n).style.display = 'block';
+            
+            document.querySelectorAll('.nav-btn').forEach((el, i) => {
+                el.classList.toggle('active', i === n);
+            });
+        }
+
+        function completeTask(btn) {
+            points += 60;
+            rating = Math.min(100, rating + 3);
+            
+            btn.innerHTML = '✅ Отправлено!';
+            btn.disabled = true;
+            
+            showModal('Отлично!', `+60 очков<br>Рейтинг +3<br>Гололёд на Невском будет убран в ближайшее время`);
+        }
+
+        function doTask(btn) {
+            points += 80;
+            rating = Math.min(100, rating + 2);
+            
+            btn.innerHTML = '✅ Выполнено!';
+            btn.disabled = true;
+            
+            showModal('Задание выполнено!', `+80 очков<br>Спасибо за вклад в чистоту города!`);
+        }
+
+        function showModal(title, text) {
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-text').innerHTML = text;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function showBonusModal() {
+            showModal('Ваши бонусы', `
+                Рейтинг 87 → скидка 15% на штрафы<br><br>
+                Следующий уровень (90) откроет бесплатный проезд<br><br>
+                <small>Интеграция с Госуслугами работает</small>
+            `);
+        }
+
+        function fakeViolation() {
+            points = Math.max(0, points - 40);
+            rating = Math.max(1, rating - 5);
+            showModal('Штраф', `-40 очков<br>Рейтинг -5<br><small>Не бросайте мусор на улице!</small>`);
+        }
+
+        // Инициализация
+        window.onload = () => {
+            switchTab(0);
+            
+            // Демо-уведомление
+            setTimeout(() => {
+                if (Math.random() > 0.5) {
+                    alert('🔔 Новое задание: "Помочь с уборкой снега у школы № 45"');
+                }
+            }, 1500);
+        };
+    </script>
+</body>
+</html>
